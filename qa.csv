@@ -1,2 +1,9 @@
-questions;answers
-Hello;Hi
+fetch("https://127.0.0.1/question", {
+  method: "POST",
+  body: JSON.stringify({
+    question: "Прив)))"
+  }),
+  headers: {
+    "Content-type": "application/json; charset=UTF-8"
+  }
+});
