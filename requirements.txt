@@ -1,0 +1,10 @@
+dlib
+scikit-learn
+Flask
+SpeechRecognition
+gTTS
+pyaudio
+spacy
+numpy
+opencv-contrib-python
+pydub
