@@ -1,0 +1,15 @@
+dlib~=19.24.4
+scikit-learn~=1.5.1
+Flask~=3.0.3
+SpeechRecognition
+gTTS~=2.5.3
+pyaudio
+spacy~=3.7.6
+numpy~=1.26.4
+opencv-contrib-python
+pydub
+
+opencv-python~=4.10.0.84
+pillow~=10.4.0
+matplotlib~=3.9.2
+requests~=2.32.3
