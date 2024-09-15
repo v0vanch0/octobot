@@ -1,0 +1,18 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:password@db/octobot
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: octobot
+    ports:
+      - "5432:5432"

@@ -1,0 +1,160 @@
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\tests\\test_api.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\tests\\test_api.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\tests\\test_api.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\requests\\api.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\tests\\test_api.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\tests\\test_api.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\tests\\test_api.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug:127.0.0.1 - - [15/Sep/2024 12:59:41] "[35m[1mPOST /api/recognize HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\requests\\models.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\json\\decoder.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\_common_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\_common_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\_feature_detector.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\_feature_detector.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\_utils.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\_utils.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\fuzz.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\fuzz.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\fuzz_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\fuzz_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\fuzz_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\process.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\process.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\process_cpp.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\process_cpp.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\process_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\process_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\utils.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\utils.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\utils_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\utils_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__pyinstaller\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__pyinstaller\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__pyinstaller\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__pyinstaller\\hook-rapidfuzz.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__pyinstaller\\hook-rapidfuzz.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__pyinstaller\\test_rapidfuzz_packaging.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\__pyinstaller\\test_rapidfuzz_packaging.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\DamerauLevenshtein.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\DamerauLevenshtein_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\DamerauLevenshtein.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\DamerauLevenshtein.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\DamerauLevenshtein_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\DamerauLevenshtein_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Hamming.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Hamming.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Hamming_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Hamming_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Indel.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Indel.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Indel_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Indel_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Jaro.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Jaro.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\JaroWinkler.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\JaroWinkler.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\JaroWinkler_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\JaroWinkler_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Jaro_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Jaro_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\LCSseq.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\LCSseq.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\LCSseq_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\LCSseq_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Levenshtein.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Levenshtein.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Levenshtein_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Levenshtein_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\OSA.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\OSA.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\OSA_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\OSA_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Postfix.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Postfix.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Postfix_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Postfix_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Prefix.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Prefix.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Prefix_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\Prefix_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\_initialize.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\_initialize.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\_initialize_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\_initialize_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\metrics_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\rapidfuzz\\distance\\metrics_py.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\Levenshtein\\StringMatcher.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\Levenshtein\\StringMatcher.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\Levenshtein\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\Levenshtein\\__init__.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\PIL\\__init__.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug:127.0.0.1 - - [15/Sep/2024 13:01:35] "[35m[1mPOST /api/recognize HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\site-packages\\numpy\\linalg\\__init__.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\face_recognition.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug:127.0.0.1 - - [15/Sep/2024 13:04:32] "[35m[1mPOST /api/recognize HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\models.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\models.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\models.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 128-572-400
+INFO:werkzeug: * Detected change in 'C:\\Users\\PYTHON\\anaconda3\\envs\\anotherProj\\Lib\\sqlite3\\__init__.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\app.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\app.py', reloading
+INFO:werkzeug: * Detected change in 'C:\\PYTHON\\projects\\anotherProj\\app.py', reloading
+INFO:werkzeug: * Restarting with watchdog (windowsapi)

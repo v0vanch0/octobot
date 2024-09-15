@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+opencv-python
+face-recognition
+fuzzywuzzy
+numpy
+requests
+psutil
+gunicorn
+prometheus_client
+Pillow
