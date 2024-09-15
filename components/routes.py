@@ -1,11 +1,9 @@
 import sqlite3
-
 import numpy as np
 from flask import request, jsonify
-
 from components.face_rec import extract_face_embedding
 from components.utils import get_db_connection, record_visit
-
+from components.voice_recognition import find_best_matching_question  # Добавляем импорт
 
 def register_routes(app):
     """Функция для регистрации маршрутов приложения Flask."""
@@ -100,3 +98,24 @@ def register_routes(app):
 
         return jsonify({"message": f"Participant {name} added successfully."}), 201
 
+    @app.route('/api/voice_recognition', methods=['POST'])
+    def voice_recognition_route():
+        """Обработка текста и нахождение лучшего вопроса с использованием нечёткого поиска."""
+        data = request.get_json()
+
+        # Проверяем наличие поля transcript
+        transcript = data.get('transcript', None)
+        if not transcript:
+            return jsonify({"error": "Transcript is required."}), 400
+
+        # Поиск лучшего совпадения
+        best_match = find_best_matching_question(transcript)
+
+        if best_match:
+            return jsonify({
+                "question": best_match['question'],
+                "answer": best_match['answer'],
+                "similarity": "high"
+            }), 200
+        else:
+            return jsonify({"message": "No similar question found."}), 404

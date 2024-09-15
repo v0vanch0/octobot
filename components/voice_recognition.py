@@ -12,10 +12,10 @@ def find_best_matching_question(transcript):
 
     # Ищем вопрос с наибольшим совпадением
     for qa in qa_list:
-        ratio = fuzz.ratio(qa['question'].lower(), transcript.lower())
+        ratio = fuzz.ratio(qa['question'].lower(), transcript.lower())  # Сравниваем в нижнем регистре
         if ratio > highest_ratio:
             highest_ratio = ratio
             best_match = qa
 
-    # Возвращаем запись вопроса и ответа, если точность выше порога
-    return best_match if highest_ratio > 70 else None
+    # Устанавливаем более низкий порог для совпадений (например, 60%)
+    return best_match if highest_ratio > 50 else None

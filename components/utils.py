@@ -10,9 +10,11 @@ def get_db_connection():
 
 
 def create_tables():
-    """Создает таблицы участников и визитов, если они не существуют."""
+    """Создает таблицы участников, визитов и вопросов-ответов, если они не существуют и добавляет тестовые данные."""
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Таблица участников
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +22,8 @@ def create_tables():
             face_embedding BLOB NOT NULL
         )
     ''')
+
+    # Таблица визитов
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS visits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,8 +33,30 @@ def create_tables():
             FOREIGN KEY (participant_id) REFERENCES participants (id)
         )
     ''')
+
+    # Таблица вопросов и ответов
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS qa (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question TEXT NOT NULL,
+            answer TEXT NOT NULL
+        )
+    ''')
+
+    # Добавление тестовых данных, если таблица пуста
+    cursor.execute('SELECT COUNT(*) FROM qa')
+    if cursor.fetchone()[0] == 0:
+        qa_data = [
+            ('Как узнать погоду?', 'Вы можете узнать погоду, сказав команду "Узнать погоду".'),
+            ('Какая сегодня дата?', 'Сегодняшняя дата выводится по команде "Какая сегодня дата?".'),
+            ('Как запустить программу?', 'Запустите программу командой "Запуск программы".')
+        ]
+        cursor.executemany('INSERT INTO qa (question, answer) VALUES (?, ?)', qa_data)
+
     conn.commit()
     conn.close()
+
+
 
 
 def get_current_time():
