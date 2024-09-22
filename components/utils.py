@@ -19,7 +19,7 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS participants (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            face_embedding BLOB NOT NULL
+            face_embedding TEXT NOT NULL  -- Теперь хранится отпечаток в виде строки
         )
     ''')
 
@@ -27,9 +27,8 @@ def create_tables():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS visits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            participant_id INTEGER,
-            arrival_time TEXT NOT NULL,
-            departure_time TEXT,
+            participant_id INTEGER NOT NULL,
+            arrival_time TEXT,
             FOREIGN KEY (participant_id) REFERENCES participants (id)
         )
     ''')
@@ -55,8 +54,6 @@ def create_tables():
 
     conn.commit()
     conn.close()
-
-
 
 
 def get_current_time():

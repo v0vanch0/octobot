@@ -1,102 +1,90 @@
 import sqlite3
 import numpy as np
 from flask import request, jsonify
-from components.face_rec import extract_face_embedding
 from components.utils import get_db_connection, record_visit
-from components.voice_recognition import find_best_matching_question  # Добавляем импорт
+from components.voice_recognition import find_best_matching_question
 
 def register_routes(app):
     """Функция для регистрации маршрутов приложения Flask."""
 
-    @app.route('/api/recognize', methods=['POST'])
-    def recognize_face_route():
-        """Распознавание лица и регистрация визита."""
-        file = request.files['image']
-        face_embedding = extract_face_embedding(file)
+    @app.route('/api/add_fingerprint', methods=['POST'])
+    def add_fingerprint():
+        """Добавление нового участника с отпечатком."""
+        name = request.json.get('name')
+        fingerprint = request.json.get('fingerprint')  # Принимаем массив из 128 чисел
 
-        if face_embedding is None:
-            return jsonify({"error": "No face found."}), 400
+        if not name or not fingerprint:
+            return jsonify({"error": "Name and fingerprint are required."}), 400
 
-        # Поиск участника по эмбеддингу
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM participants')
-        participants = cursor.fetchall()
+        if len(fingerprint) != 128:
+            return jsonify({"error": "Fingerprint must be an array of 128 numbers."}), 400
 
-        recognized_participant = None
-        for participant in participants:
-            db_embedding = np.frombuffer(participant['face_embedding'], dtype=np.float64)
-            distance = np.linalg.norm(db_embedding - face_embedding)
-
-            if distance < 0.6:
-                recognized_participant = participant
-                break
-
-        if recognized_participant:
-            participant_id = recognized_participant['id']
-            cursor.execute('SELECT * FROM visits WHERE participant_id = ? AND departure_time IS NULL',
-                           (participant_id,))
-            ongoing_visit = cursor.fetchone()
-
-            if ongoing_visit:
-                # Если участник уходит
-                record_visit(participant_id, arrival=False)
-                response = {
-                    "message": f"{recognized_participant['name']} left.",
-                    "status": "departure"
-                }
-            else:
-                # Если участник приходит
-                record_visit(participant_id, arrival=True)
-                response = {
-                    "message": f"{recognized_participant['name']} arrived.",
-                    "status": "arrival"
-                }
-        else:
-            response = {"message": "No match found."}
-
-        conn.close()
-        return jsonify(response), 200
-
-    @app.route('/api/add_participant', methods=['POST'])
-    def add_participant():
-        """Добавление нового участника в базу данных с проверкой на дубликаты."""
-        if 'image' not in request.files:
-            return jsonify({"error": "No image provided."}), 400
-
-        file = request.files['image']
-        name = request.form.get('name')
-
-        if not file or not name:
-            return jsonify({"error": "Name and image are required."}), 400
-
-        face_embedding = extract_face_embedding(file)
-
-        if face_embedding is None:
-            return jsonify({"error": "No face found in the image."}), 400
+        # Преобразуем массив в бинарные данные для хранения
+        fingerprint_bytes = np.array(fingerprint, dtype=np.float64).tobytes()
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Проверяем, существует ли участник с таким же эмбеддингом
+        # Проверяем, существует ли участник с таким же отпечатком
         cursor.execute('SELECT * FROM participants')
         participants = cursor.fetchall()
 
         for participant in participants:
-            db_embedding = np.frombuffer(participant['face_embedding'], dtype=np.float64)
-            distance = np.linalg.norm(db_embedding - face_embedding)
+            stored_fingerprint = participant['face_embedding']
 
-            if distance < 0.6:
+            # Преобразуем бинарные данные обратно в массив
+            stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
+            distance = np.linalg.norm(stored_fingerprint - np.array(fingerprint))
+            if distance < 0.6:  # Задаем порог для сравнения
                 conn.close()
                 return jsonify({"message": f"Participant {participant['name']} already exists."}), 409
 
         # Если участник не найден, добавляем его
-        embedding_bytes = sqlite3.Binary(face_embedding.tobytes())
-        cursor.execute('INSERT INTO participants (name, face_embedding) VALUES (?, ?)', (name, embedding_bytes))
+        cursor.execute('INSERT INTO participants (name, face_embedding) VALUES (?, ?)', (name, fingerprint_bytes))
         conn.commit()
         conn.close()
 
         return jsonify({"message": f"Participant {name} added successfully."}), 201
+
+    @app.route('/api/compare_fingerprint', methods=['POST'])
+    def compare_fingerprint():
+        """Сравнение отпечатков."""
+        try:
+            fingerprint = request.json.get('fingerprint')  # Принимаем массив из 128 чисел
+
+            if not fingerprint:
+                return jsonify({"error": "Fingerprint is required."}), 400
+
+            if len(fingerprint) != 128:
+                return jsonify({"error": "Fingerprint must be an array of 128 numbers."}), 400
+
+            fingerprint = np.array(fingerprint, dtype=np.float64)  # Преобразуем в numpy массив для сравнения
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM participants')
+            participants = cursor.fetchall()
+
+            recognized_participant = None
+            for participant in participants:
+                stored_fingerprint = participant['face_embedding']
+
+                # Преобразуем бинарные данные обратно в массив
+                stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
+                distance = np.linalg.norm(stored_fingerprint - fingerprint)
+                if distance < 0.6:  # Задаем порог для сравнения
+                    recognized_participant = participant
+                    break
+
+            if recognized_participant:
+                return jsonify({"message": f"Participant {recognized_participant['name']} recognized."}), 200
+            else:
+                return jsonify({"message": "No match found."}), 404
+
+            conn.close()
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500  # Возвращаем ошибку как JSON
 
     @app.route('/api/voice_recognition', methods=['POST'])
     def voice_recognition_route():

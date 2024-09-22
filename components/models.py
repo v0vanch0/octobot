@@ -1,28 +1,41 @@
 import sqlite3
+import numpy as np
 from components.utils import get_db_connection
 
 
 # Модель участника (пользователя)
-def add_participant(name, face_embedding):
+def add_participant(name, fingerprint):
     """Добавление нового участника в таблицу participants."""
+    fingerprint_str = ','.join(map(str, fingerprint))  # Преобразуем массив в строку
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
         INSERT INTO participants (name, face_embedding)
         VALUES (?, ?)
-    ''', (name, sqlite3.Binary(face_embedding.tobytes())))
+    ''', (name, fingerprint_str))
     conn.commit()
     conn.close()
 
 
-def get_participant_by_id(participant_id):
-    """Получение участника по его ID."""
+def get_participant_by_fingerprint(fingerprint):
+    """Получение участника по отпечатку."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM participants WHERE id = ?', (participant_id,))
-    participant = cursor.fetchone()
+    cursor.execute('SELECT * FROM participants')
+    participants = cursor.fetchall()
+
+    recognized_participant = None
+    fingerprint = np.array(fingerprint)
+
+    for participant in participants:
+        stored_fingerprint = np.fromstring(participant['face_embedding'], sep=',')
+        distance = np.linalg.norm(stored_fingerprint - fingerprint)
+        if distance < 0.6:  # Задаем порог для сравнения
+            recognized_participant = participant
+            break
+
     conn.close()
-    return participant
+    return recognized_participant
 
 
 def get_all_participants():
