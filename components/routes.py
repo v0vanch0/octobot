@@ -1,8 +1,13 @@
+import io
 import sqlite3
 import numpy as np
-from flask import request, jsonify
+from TTS.api import TTS
+from flask import request, jsonify, send_file
 from components.utils import get_db_connection, record_visit
 from components.voice_recognition import find_best_matching_question
+import soundfile as sf
+
+tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda().bfloat16()
 
 def register_routes(app):
     """Функция для регистрации маршрутов приложения Flask."""
@@ -105,5 +110,34 @@ def register_routes(app):
                 "answer": best_match['answer'],
                 "similarity": "high"
             }), 200
+        else:
+            return jsonify({"message": "No similar question found."}), 404
+
+    @app.route('/api/voice_answer', methods=['POST'])
+    def voice_answer_route():
+        """Обработка текста, нахождение лучшего вопроса и голосовой ответ с использованием TTS."""
+        data = request.get_json()
+
+        # Проверяем наличие поля transcript
+        transcript = data.get('transcript', None)
+        if not transcript:
+            return jsonify({"error": "Transcript is required."}), 400
+
+        # Поиск лучшего совпадения
+        best_match = find_best_matching_question(transcript)
+
+        if best_match:
+            # Генерация аудио ответа с помощью TTS
+            answer = best_match['answer']
+            audio_array = tts.tts(text=answer, speaker_wav="video5460965958115940537.wav", language="en")  # Синтезируем голос и получаем numpy массив
+
+            # Преобразуем numpy массив в байты (в формате WAV)
+            audio_stream = io.BytesIO()
+            sf.write(audio_stream, audio_array, 22050, format='WAV')  # Частота дискретизации 22050 Hz
+            audio_stream.seek(0)
+
+            # Возвращаем аудио файл как ответ
+            return send_file(audio_stream, mimetype='audio/wav', as_attachment=True, download_name='response.wav')
+
         else:
             return jsonify({"message": "No similar question found."}), 404

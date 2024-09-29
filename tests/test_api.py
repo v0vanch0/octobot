@@ -2,7 +2,6 @@ import requests
 
 BASE_URL = 'http://localhost:5000'
 
-
 def test_add_fingerprint(fingerprint, name):
     """Тест для API добавления нового участника с отпечатком пальца."""
     url = f'{BASE_URL}/api/add_fingerprint'
@@ -96,6 +95,33 @@ def test_voice_recognition_no_match():
             print("Ответ сервера не является JSON.")
 
 
+def test_voice_answer():
+    """Тест для API voice_answer (получение аудиофайла с ответом)."""
+    url = f'{BASE_URL}/api/voice_answer'
+    data = {"transcript": "Как узнать погоду?"}
+
+    response = requests.post(url, json=data)
+
+    if response.status_code == 200:
+        # Проверяем, что возвращается аудиофайл и сохраняем его
+        content_type = response.headers['Content-Type']
+        if content_type == 'audio/wav':
+            with open('response.wav', 'wb') as f:
+                f.write(response.content)
+            print("Аудио ответ успешно получен и сохранён как 'response.wav'.")
+        else:
+            print(f"Ошибка: Ожидался аудиофайл, но был получен {content_type}")
+    elif response.status_code == 404:
+        print("Совпадений не найдено.")
+        print(response.json())
+    else:
+        print(f"Ошибка: {response.status_code}")
+        try:
+            print(response.json())
+        except requests.exceptions.JSONDecodeError:
+            print("Ответ сервера не является JSON.")
+
+
 if __name__ == '__main__':
     # Тестирование добавления нового участника с отпечатком
     print("Тестирование добавления нового участника с отпечатком пальца:")
@@ -117,3 +143,7 @@ if __name__ == '__main__':
     # Тестирование voice_recognition без совпадений
     print("\nТестирование voice_recognition (нет совпадений):")
     test_voice_recognition_no_match()
+
+    # Тестирование voice_answer (получение аудиофайла)
+    print("\nТестирование voice_answer (получение аудиофайла):")
+    test_voice_answer()
