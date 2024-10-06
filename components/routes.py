@@ -1,82 +1,118 @@
+# routes.py
 import io
-import sqlite3
 import numpy as np
+import soundfile as sf
 from TTS.api import TTS
 from flask import request, jsonify, send_file
+import cv2  # Добавлено для обработки изображений
+
+from components.face_rec import shape_predictor, face_rec_model, face_detector
 from components.utils import get_db_connection, record_visit
 from components.voice_recognition import find_best_matching_question
-import soundfile as sf
 
-tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda().bfloat16()
+tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda()
+
 
 def register_routes(app):
     """Функция для регистрации маршрутов приложения Flask."""
 
     @app.route('/api/add_fingerprint', methods=['POST'])
     def add_fingerprint():
-        """Добавление нового участника с отпечатком."""
-        name = request.json.get('name')
-        fingerprint = request.json.get('fingerprint')  # Принимаем массив из 128 чисел
+        """Добавление нового участника с изображением лица."""
+        try:
+            # Получение изображения лица из запроса
+            image_file = request.files.get('image')
+            name = request.form.get('name')
 
-        if not name or not fingerprint:
-            return jsonify({"error": "Name and fingerprint are required."}), 400
+            if not name or not image_file:
+                return jsonify({"error": "Name and image are required."}), 400
 
-        if len(fingerprint) != 128:
-            return jsonify({"error": "Fingerprint must be an array of 128 numbers."}), 400
+            # Чтение изображения с использованием OpenCV
+            image_bytes = image_file.read()
+            npimg = np.frombuffer(image_bytes, np.uint8)
+            image_np = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
-        # Преобразуем массив в бинарные данные для хранения
-        fingerprint_bytes = np.array(fingerprint, dtype=np.float64).tobytes()
+            if image_np is None:
+                return jsonify({"error": "Invalid image."}), 400
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
+            # Извлечение цифрового отпечатка лица
+            faces = face_detector(image_np)
 
-        # Проверяем, существует ли участник с таким же отпечатком
-        cursor.execute('SELECT * FROM participants')
-        participants = cursor.fetchall()
+            if len(faces) == 0:
+                return jsonify({"message": "No face detected in the image."}), 404
 
-        for participant in participants:
-            stored_fingerprint = participant['face_embedding']
+            shape = shape_predictor(image_np, faces[0])
+            face_embedding = np.array(face_rec_model.compute_face_descriptor(image_np, shape))
 
-            # Преобразуем бинарные данные обратно в массив
-            stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
-            distance = np.linalg.norm(stored_fingerprint - np.array(fingerprint))
-            if distance < 0.6:  # Задаем порог для сравнения
-                conn.close()
-                return jsonify({"message": f"Participant {participant['name']} already exists."}), 409
+            # Преобразуем массив в бинарные данные для хранения
+            fingerprint_bytes = face_embedding.tobytes()
 
-        # Если участник не найден, добавляем его
-        cursor.execute('INSERT INTO participants (name, face_embedding) VALUES (?, ?)', (name, fingerprint_bytes))
-        conn.commit()
-        conn.close()
+            conn = get_db_connection()
+            cursor = conn.cursor()
 
-        return jsonify({"message": f"Participant {name} added successfully."}), 201
+            # Проверяем, существует ли участник с таким же отпечатком
+            cursor.execute('SELECT * FROM participants')
+            participants = cursor.fetchall()
+
+            for participant in participants:
+                stored_fingerprint = participant['face_embedding']
+
+                # Преобразуем бинарные данные обратно в массив
+                stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
+                distance = np.linalg.norm(stored_fingerprint - face_embedding)
+                if distance < 0.6:  # Задаем порог для сравнения
+                    conn.close()
+                    return jsonify({"message": f"Participant {participant['name']} already exists."}), 409
+
+            # Если участник не найден, добавляем его
+            cursor.execute('INSERT INTO participants (name, face_embedding) VALUES (?, ?)', (name, fingerprint_bytes))
+            conn.commit()
+            conn.close()
+
+            return jsonify({"message": f"Participant {name} added successfully."}), 201
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500  # Возвращаем ошибку как JSON
 
     @app.route('/api/compare_fingerprint', methods=['POST'])
     def compare_fingerprint():
-        """Сравнение отпечатков."""
+        """Сравнение отпечатка лица с изображением."""
         try:
-            fingerprint = request.json.get('fingerprint')  # Принимаем массив из 128 чисел
+            # Получение изображения лица из запроса
+            image_file = request.files.get('image')
 
-            if not fingerprint:
-                return jsonify({"error": "Fingerprint is required."}), 400
+            if not image_file:
+                return jsonify({"error": "Image file is required."}), 400
 
-            if len(fingerprint) != 128:
-                return jsonify({"error": "Fingerprint must be an array of 128 numbers."}), 400
+            # Чтение изображения с использованием OpenCV
+            image_bytes = image_file.read()
+            npimg = np.frombuffer(image_bytes, np.uint8)
+            image_np = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
-            fingerprint = np.array(fingerprint, dtype=np.float64)  # Преобразуем в numpy массив для сравнения
+            if image_np is None:
+                return jsonify({"error": "Invalid image."}), 400
+
+            # Извлечение цифрового отпечатка лица
+            faces = face_detector(image_np)
+
+            if len(faces) == 0:
+                return jsonify({"message": "No face detected in the image."}), 404
+
+            shape = shape_predictor(image_np, faces[0])
+            face_embedding = np.array(face_rec_model.compute_face_descriptor(image_np, shape))
 
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute('SELECT * FROM participants')
             participants = cursor.fetchall()
-
+            conn.close()
             recognized_participant = None
             for participant in participants:
                 stored_fingerprint = participant['face_embedding']
 
                 # Преобразуем бинарные данные обратно в массив
                 stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
-                distance = np.linalg.norm(stored_fingerprint - fingerprint)
+                distance = np.linalg.norm(stored_fingerprint - face_embedding)
                 if distance < 0.6:  # Задаем порог для сравнения
                     recognized_participant = participant
                     break
@@ -85,8 +121,6 @@ def register_routes(app):
                 return jsonify({"message": f"Participant {recognized_participant['name']} recognized."}), 200
             else:
                 return jsonify({"message": "No match found."}), 404
-
-            conn.close()
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500  # Возвращаем ошибку как JSON
@@ -129,9 +163,12 @@ def register_routes(app):
         if best_match:
             # Генерация аудио ответа с помощью TTS
             answer = best_match['answer']
-            audio_array = tts.tts(text=answer, speaker_wav="video5460965958115940537.wav", language="en")  # Синтезируем голос и получаем numpy массив
+            try:
+                audio_array = tts.tts(text=answer, speaker_wav="video5460965958115940537.wav", language="en")
+            except Exception as tts_error:
+                return jsonify({"error": f"TTS synthesis failed: {str(tts_error)}"}), 500
 
-            # Преобразуем numpy массив в байты (в формате WAV)
+            # Преобразование numpy массива в байты (в формате WAV)
             audio_stream = io.BytesIO()
             sf.write(audio_stream, audio_array, 22050, format='WAV')  # Частота дискретизации 22050 Hz
             audio_stream.seek(0)
@@ -141,3 +178,70 @@ def register_routes(app):
 
         else:
             return jsonify({"message": "No similar question found."}), 404
+
+    @app.route('/api/face_recognition_greeting', methods=['POST'])
+    def face_recognition_greeting():
+        """Распознавание лица, приветствие и запись визита."""
+        try:
+            # Получение файла изображения из запроса
+            image_file = request.files.get('image')
+
+            if not image_file:
+                return jsonify({"error": "Image file is required."}), 400
+
+            # Чтение изображения с использованием OpenCV
+            image_bytes = image_file.read()
+            npimg = np.frombuffer(image_bytes, np.uint8)
+            image_np = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+
+            if image_np is None:
+                return jsonify({"error": "Invalid image."}), 400
+
+            # Извлечение цифрового отпечатка лица
+            faces = face_detector(image_np)
+
+            if len(faces) == 0:
+                return jsonify({"message": "No face detected in the image."}), 404
+
+            shape = shape_predictor(image_np, faces[0])
+            face_embedding = np.array(face_rec_model.compute_face_descriptor(image_np, shape))
+
+            # Поиск участника по отпечатку лица
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM participants')
+            participants = cursor.fetchall()
+            conn.close()
+
+            recognized_participant = None
+            for participant in participants:
+                stored_fingerprint = participant['face_embedding']
+                stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
+                distance = np.linalg.norm(stored_fingerprint - face_embedding)
+                if distance < 0.6:
+                    recognized_participant = participant
+                    break
+
+            if recognized_participant is None:
+                return jsonify({"message": "No matching participant found."}), 404
+
+            # Приветствие участника с использованием TTS
+            greeting_text = f"Hello, {recognized_participant['name']}! Welcome back!"
+            try:
+                audio_array = tts.tts(text=greeting_text, speaker_wav="video5460965958115940537.wav", language="en")
+            except Exception as tts_error:
+                return jsonify({"error": f"TTS synthesis failed: {str(tts_error)}"}), 500
+
+            # Преобразование numpy массива в байты (в формате WAV)
+            audio_stream = io.BytesIO()
+            sf.write(audio_stream, audio_array, 22050, format='WAV')
+            audio_stream.seek(0)
+
+            # Запись визита участника в базу данных
+            record_visit(recognized_participant['id'])
+
+            # Возвращаем аудио файл как ответ
+            return send_file(audio_stream, mimetype='audio/wav', as_attachment=True, download_name='greeting.wav')
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500  # Возвращаем ошибку как JSON
