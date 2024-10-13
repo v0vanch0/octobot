@@ -1,13 +1,11 @@
 # routes.py
-import io
 import numpy as np
-import soundfile as sf
 from TTS.api import TTS
-from flask import request, jsonify, send_file
+from flask import request, jsonify
 import cv2  # Добавлено для обработки изображений
-
+from audio.audio_data import audiod
 from components.face_rec import shape_predictor, face_rec_model, face_detector
-from components.utils import get_db_connection, record_visit
+from components.utils import get_db_connection
 from components.voice_recognition import find_best_matching_question
 
 tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda()
@@ -161,21 +159,20 @@ def register_routes(app):
         best_match = find_best_matching_question(transcript)
 
         if best_match:
-            # Генерация аудио ответа с помощью TTS
-            answer = best_match['answer']
-            try:
-                audio_array = tts.tts(text=answer, speaker_wav="video5460965958115940537.wav", language="en")
-            except Exception as tts_error:
-                return jsonify({"error": f"TTS synthesis failed: {str(tts_error)}"}), 500
-
-            # Преобразование numpy массива в байты (в формате WAV)
-            audio_stream = io.BytesIO()
-            sf.write(audio_stream, audio_array, 22050, format='WAV')  # Частота дискретизации 22050 Hz
-            audio_stream.seek(0)
+            # # Генерация аудио ответа с помощью TTS
+            # answer = best_match['answer']
+            # try:
+            #     audio_array = tts.tts(text=answer, speaker_wav="GLaDOS_sp_incinerator_01_09_ru.wav", language="ru", speed=0.25)
+            # except Exception as tts_error:
+            #     return jsonify({"error": f"TTS synthesis failed: {str(tts_error)}"}), 500
+            #
+            # # Преобразование numpy массива в байты (в формате WAV)
+            # audio_stream = io.BytesIO()
+            # sf.write(audio_stream, audio_array, 22050, format='WAV')  # Частота дискретизации 22050 Hz
+            # audio_stream.seek(0)
 
             # Возвращаем аудио файл как ответ
-            return send_file(audio_stream, mimetype='audio/wav', as_attachment=True, download_name='response.wav')
-
+            return jsonify({"audio_path": audiod[best_match['answer']]}), 200
         else:
             return jsonify({"message": "No similar question found."}), 404
 
@@ -226,22 +223,24 @@ def register_routes(app):
                 return jsonify({"message": "No matching participant found."}), 404
 
             # Приветствие участника с использованием TTS
-            greeting_text = f"Hello, {recognized_participant['name']}! Welcome back!"
-            try:
-                audio_array = tts.tts(text=greeting_text, speaker_wav="video5460965958115940537.wav", language="en")
-            except Exception as tts_error:
-                return jsonify({"error": f"TTS synthesis failed: {str(tts_error)}"}), 500
-
-            # Преобразование numpy массива в байты (в формате WAV)
-            audio_stream = io.BytesIO()
-            sf.write(audio_stream, audio_array, 22050, format='WAV')
-            audio_stream.seek(0)
-
-            # Запись визита участника в базу данных
-            record_visit(recognized_participant['id'])
+            greeting_text = f"Здравствуйте, {recognized_participant['name']}! "
+            # try:
+            #     audio_array = tts.tts(text=greeting_text, speaker_wav="GLaDOS_sp_incinerator_01_09_ru.wav",
+            #                           language="ru", speed=0.25)
+            # except Exception as tts_error:
+            #     return jsonify({"error": f"TTS synthesis failed: {str(tts_error)}"}), 500
+            #
+            # # Преобразование numpy массива в байты (в формате WAV)
+            # audio_stream = io.BytesIO()
+            # sf.write(audio_stream, audio_array, 22050, format='WAV')
+            # audio_stream.seek(0)
+            #
+            # # Запись визита участника в базу данных
+            # record_visit(recognized_participant['id'])
 
             # Возвращаем аудио файл как ответ
-            return send_file(audio_stream, mimetype='audio/wav', as_attachment=True, download_name='greeting.wav')
+            # return send_file(audio_stream, mimetype='audio/wav', as_attachment=True, download_name='greeting.wav')
+            return jsonify({"audio_path": audiod[greeting_text]}), 200
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500  # Возвращаем ошибку как JSON
