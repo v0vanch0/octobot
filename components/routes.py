@@ -1,6 +1,6 @@
 # routes.py
 import numpy as np
-from TTS.api import TTS
+# from TTS.api import TTS
 from flask import request, jsonify
 import cv2  # Добавлено для обработки изображений
 from audio.audio_data import audiod
@@ -8,7 +8,7 @@ from components.face_rec import shape_predictor, face_rec_model, face_detector
 from components.utils import get_db_connection
 from components.voice_recognition import find_best_matching_question
 
-tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda()
+# tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda()
 
 
 def register_routes(app):
@@ -123,28 +123,6 @@ def register_routes(app):
         except Exception as e:
             return jsonify({"error": str(e)}), 500  # Возвращаем ошибку как JSON
 
-    @app.route('/api/voice_recognition', methods=['POST'])
-    def voice_recognition_route():
-        """Обработка текста и нахождение лучшего вопроса с использованием нечёткого поиска."""
-        data = request.get_json()
-
-        # Проверяем наличие поля transcript
-        transcript = data.get('transcript', None)
-        if not transcript:
-            return jsonify({"error": "Transcript is required."}), 400
-
-        # Поиск лучшего совпадения
-        best_match = find_best_matching_question(transcript)
-
-        if best_match:
-            return jsonify({
-                "question": best_match['question'],
-                "answer": best_match['answer'],
-                "similarity": "high"
-            }), 200
-        else:
-            return jsonify({"message": "No similar question found."}), 404
-
     @app.route('/api/voice_answer', methods=['POST'])
     def voice_answer_route():
         """Обработка текста, нахождение лучшего вопроса и голосовой ответ с использованием TTS."""
@@ -170,7 +148,7 @@ def register_routes(app):
             # audio_stream = io.BytesIO()
             # sf.write(audio_stream, audio_array, 22050, format='WAV')  # Частота дискретизации 22050 Hz
             # audio_stream.seek(0)
-
+            print(best_match['answer'])
             # Возвращаем аудио файл как ответ
             return jsonify({"audio_path": audiod[best_match['answer']]}), 200
         else:
@@ -223,7 +201,7 @@ def register_routes(app):
                 return jsonify({"message": "No matching participant found."}), 404
 
             # Приветствие участника с использованием TTS
-            greeting_text = f"Здравствуйте, {recognized_participant['name']}! "
+            greeting_text = f"Здравствуйте!"
             # try:
             #     audio_array = tts.tts(text=greeting_text, speaker_wav="GLaDOS_sp_incinerator_01_09_ru.wav",
             #                           language="ru", speed=0.25)

@@ -1,8 +1,8 @@
+
 import requests
 import customtkinter as ctk
 from tkinter import filedialog
 from PIL import Image, ImageTk
-import io
 import os
 from playsound import playsound
 import threading
@@ -16,8 +16,7 @@ class APITestApp(ctk.CTk):
         super().__init__()
         self.title("API Test Application")
         self.geometry("900x700")
-        ctk.set_appearance_mode("light")
-
+        ctk.set_default_color_theme("green")
         # Создание основных фреймов
         self.create_widgets()
 
@@ -57,7 +56,6 @@ class APITestApp(ctk.CTk):
         # Кнопки для тестов
         ctk.CTkButton(parent, text="Добавить Отпечаток", command=self.add_fingerprint_test).pack(pady=5)
         ctk.CTkButton(parent, text="Сравнить Отпечаток", command=self.compare_fingerprint_test).pack(pady=5)
-        # ctk.CTkButton(parent, text="Распознавание Голоса", command=self.voice_recognition_test).pack(pady=5)
         ctk.CTkButton(parent, text="Голосовой Ответ", command=self.voice_answer_test).pack(pady=5)
         ctk.CTkButton(parent, text="Приветствие по Лицу", command=self.face_recognition_greeting_test).pack(pady=5)
 
@@ -89,9 +87,12 @@ class APITestApp(ctk.CTk):
         text_widget.configure(state="disabled")
         text_widget.pack(pady=10)
 
-    def play_audio(self, audio_path):
-        # Используем отдельный поток для воспроизведения аудио, чтобы не блокировать интерфейс
-        threading.Thread(target=playsound, args=(audio_path,), daemon=True).start()
+    def play_audio_from_path(self, audio_path):
+        # Воспроизведение аудиофайла по предоставленному пути
+        if audio_path and os.path.exists(audio_path):
+            threading.Thread(target=playsound, args=(audio_path,), daemon=True).start()
+        else:
+            self.display_text(f"Файл не найден по пути: {audio_path}")
 
     def add_fingerprint_test(self):
         self.clear_display()
@@ -118,7 +119,7 @@ class APITestApp(ctk.CTk):
             self.display_text(f"Ошибка при подключении к серверу: {e}")
             return
 
-        result_text = f"Статус код: {response.status_code}\n"
+        result_text = f"Статус код: {response.status_code}"
         try:
             result_text += f"Ответ: {response.json()}"
         except requests.exceptions.JSONDecodeError:
@@ -145,34 +146,7 @@ class APITestApp(ctk.CTk):
             self.display_text(f"Ошибка при подключении к серверу: {e}")
             return
 
-        result_text = f"Статус код: {response.status_code}\n"
-        try:
-            result_text += f"Ответ: {response.json()}"
-        except requests.exceptions.JSONDecodeError:
-            result_text += "Ответ сервера не является JSON."
-
-        self.display_text(result_text)
-
-    def voice_recognition_test(self):
-        self.clear_display()
-
-        transcript = self.transcript_entry.get()
-        if not transcript:
-            self.display_text("Пожалуйста, введите текст запроса.")
-            return
-
-        self.display_text("Тестирование распознавания голоса")
-
-        url = f'{BASE_URL}/api/voice_recognition'
-        data = {"transcript": transcript}
-
-        try:
-            response = requests.post(url, json=data)
-        except Exception as e:
-            self.display_text(f"Ошибка при подключении к серверу: {e}")
-            return
-
-        result_text = f"Статус код: {response.status_code}\n"
+        result_text = f"Статус код: {response.status_code}"
         try:
             result_text += f"Ответ: {response.json()}"
         except requests.exceptions.JSONDecodeError:
@@ -199,21 +173,18 @@ class APITestApp(ctk.CTk):
             self.display_text(f"Ошибка при подключении к серверу: {e}")
             return
 
-        result_text = f"Статус код: {response.status_code}\n"
-        content_type = response.headers.get('Content-Type', '')
+        result_text = f"Статус код: {response.status_code}"
 
-        if response.status_code == 200 and 'audio' in content_type:
-            audio_data = response.content
-            audio_path = 'response_audio.wav'
-            with open(audio_path, 'wb') as f:
-                f.write(audio_data)
-            result_text += "\nАудио ответ успешно получен и будет воспроизведен."
-            self.play_audio(audio_path)
-        else:
-            try:
-                result_text += f"\nОтвет: {response.json()}"
-            except requests.exceptions.JSONDecodeError:
-                result_text += "\nОтвет сервера не является JSON."
+        try:
+            response_data = response.json()
+            if 'audio_path' in response_data:
+                result_text += "Аудио ответ будет воспроизведен."
+                audio_path = response_data['audio_path']
+                self.play_audio_from_path(audio_path)
+            else:
+                result_text += f"Ответ: {response_data}"
+        except requests.exceptions.JSONDecodeError:
+            result_text += "Ответ сервера не является JSON."
 
         self.display_text(result_text)
 
@@ -236,21 +207,18 @@ class APITestApp(ctk.CTk):
             self.display_text(f"Ошибка при подключении к серверу: {e}")
             return
 
-        result_text = f"Статус код: {response.status_code}\n"
-        content_type = response.headers.get('Content-Type', '')
+        result_text = f"Статус код: {response.status_code}"
 
-        if response.status_code == 200 and 'audio' in content_type:
-            audio_data = response.content
-            audio_path = 'greeting_audio.wav'
-            with open(audio_path, 'wb') as f:
-                f.write(audio_data)
-            result_text += "\nАудио приветствие успешно получено и будет воспроизведено."
-            self.play_audio(audio_path)
-        else:
-            try:
-                result_text += f"\nОтвет: {response.json()}"
-            except requests.exceptions.JSONDecodeError:
-                result_text += "\nОтвет сервера не является JSON."
+        try:
+            response_data = response.json()
+            if 'audio_path' in response_data:
+                result_text += "Аудио приветствие будет воспроизведено."
+                audio_path = response_data['audio_path']
+                self.play_audio_from_path(audio_path)
+            else:
+                result_text += f"Ответ: {response_data}"
+        except requests.exceptions.JSONDecodeError:
+            result_text += "Ответ сервера не является JSON."
 
         self.display_text(result_text)
 
