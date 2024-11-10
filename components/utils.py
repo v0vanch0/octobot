@@ -38,7 +38,8 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS qa (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             question TEXT NOT NULL,
-            answer TEXT NOT NULL
+            answer TEXT NOT NULL,
+            path TEXT NOT NULL
         )
     ''')
 

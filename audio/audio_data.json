@@ -1,5 +1,11 @@
 {
     "я являюсь ассистентом по вопросам образовательного центра октопус.": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\example_01.mp3",
     "Здравствуйте!": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\example_02.mp3",
-    "Доброго времени суток!": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\example_03.mp3"
+    "Доброго времени суток!": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\example_03.mp3",
+    "(отрывок)": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\example_04_real.wav",
+    "Приветствие для Павел Юрьевич": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\Павел Юрьевич_greeting.mp3",
+    "no similar": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\dont_know.mp3",
+    "Я веду журнал посещений образовательного центра и отвечаю на вопросы посетителей": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\Я веду журнал посещений образовательного центра и отвечаю на вопросы посетителей.mp3",
+    "Оставте ваши контакты администратору, и с вами свяжутся во время следующего набора групп": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\Оставте ваши контакты администратору, и с вами свяжутся во время следующего набора групп.mp3",
+    "На большинство из направлений можно попасть бесплатно, стоимость платных занятий зависит от направления, обратитесь к администратору за актуальной информацией": "C:\\PYTHON\\projects\\anotherProj\\audio\\files\\На большинство из направлений можно попасть бесплатно, стоимость платных занятий зависит от направления, обратитесь к администратору за актуальной информацией.mp3"
 }

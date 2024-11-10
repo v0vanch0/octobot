@@ -37,7 +37,8 @@ def show_visits():
     if visits:
         print("\nВизиты:")
         for visit in visits:
-            print(f"ID: {visit['id']}, ID участника: {visit['participant_id']}, Время прихода: {visit['arrival_time']}, Время ухода: {visit['departure_time']}")
+            print(
+                f"ID: {visit['id']}, ID участника: {visit['participant_id']}, Время прихода: {visit['arrival_time']}, Время ухода: {visit['departure_time']}")
     else:
         print("\nВ базе данных нет визитов.")
 
@@ -97,6 +98,25 @@ def delete_question_answer():
             break
 
 
+def delete_runner():
+    """Удаляет вопрос-ответ по ID."""
+    while True:
+        qa_id = input("Введите ID участника для удаления: ")
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM participants WHERE id = ?', (qa_id,))
+        conn.commit()
+        conn.close()
+
+        print(f"\nУчастник с ID {qa_id} успешно удален.")
+
+        # Предложить удалить еще один вопрос или выйти
+        more = input("Хотите удалить еще один вопрос? (y/n): ").strip().lower()
+        if more != 'y':
+            break
+
+
 def update_question_answer():
     """Обновляет существующий вопрос и/или ответ с циклом для продолжения."""
     while True:
@@ -118,7 +138,7 @@ def update_question_answer():
         print(f"\nВопрос-ответ с ID {qa_id} успешно обновлен.")
 
         # Предложить обновить еще один вопрос или выйти
-        more = input("Хотите обновить еще один вопрос? (y/n): ").strip().lower()
+        more = input("Хотите удалить ещё одного участника? (y/n): ").strip().lower()
         if more != 'y':
             break
 
@@ -133,9 +153,10 @@ def show_menu():
         print("4. Добавить вопрос-ответ")
         print("5. Удалить вопрос-ответ")
         print("6. Обновить вопрос-ответ")
-        print("7. Выход")
+        print("7. Удалить участника")
+        print("8. Выход")
 
-        choice = input("Выберите действие (1-7): ")
+        choice = input("Выберите действие (1-8): ")
 
         if choice == '1':
             show_participants()
@@ -150,6 +171,8 @@ def show_menu():
         elif choice == '6':
             update_question_answer()
         elif choice == '7':
+            delete_runner()
+        elif choice == '8':
             print("Выход из программы.")
             break
         else:
