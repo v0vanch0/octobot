@@ -360,7 +360,7 @@ def register_routes(app):
 
             if answer:
                 # Сохраняем путь к персональному приветствию
-                audio_data[answer] = os.path.abspath(path)
+                audio_data[answer] = path
 
             with open(audio_data_file, 'w', encoding='utf-8') as file:
                 # Перезаписываем JSON файл

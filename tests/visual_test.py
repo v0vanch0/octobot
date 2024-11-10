@@ -1,12 +1,12 @@
-import tkinter.ttk
-
-import requests
-import customtkinter as ctk
-from tkinter import filedialog, messagebox
-from PIL import Image, ImageTk
 import os
-from playsound import playsound
 import threading
+import tkinter.ttk
+from tkinter import filedialog, messagebox
+
+import customtkinter as ctk
+import requests
+import simpleaudio as sa
+from PIL import Image, ImageTk
 
 BASE_URL = 'http://localhost:5000'
 
@@ -162,7 +162,12 @@ class APITestApp(ctk.CTk):
     def play_audio_from_path(self, audio_path):
         # Воспроизведение аудиофайла по предоставленному пути
         if audio_path and os.path.exists(audio_path):
-            threading.Thread(target=playsound, args=(audio_path,), daemon=True).start()
+            def play_audio():
+                wave_obj = sa.WaveObject.from_wave_file(audio_path)
+                play_obj = wave_obj.play()
+                play_obj.wait_done()  # Дождаться завершения воспроизведения
+
+            threading.Thread(target=play_audio, daemon=True).start()
         else:
             self.display_text(f"Файл не найден по пути: {audio_path}")
 
@@ -250,7 +255,7 @@ class APITestApp(ctk.CTk):
         try:
             response_data = response.json()
             if 'audio_path' in response_data:
-                result_text += "Аудио ответ будет воспроизведен."
+                result_text += f"Аудио ответ будет воспроизведен. Путь: {response_data['audio_path']}"
                 audio_path = response_data['audio_path']
                 self.play_audio_from_path(audio_path)
             else:
