@@ -20,6 +20,51 @@ class APITestApp(ctk.CTk):
         ctk.set_default_color_theme("green")
         self.create_widgets()
 
+    def create_visitors_tab(self, parent):
+        ctk.CTkLabel(parent, text="Управление Посетителями", font=("Arial", 18)).pack(pady=10)
+
+        entry_frame = ctk.CTkFrame(parent)
+        entry_frame.pack(pady=10, fill="x")
+
+        ctk.CTkLabel(entry_frame, text="Имя:", width=80).grid(row=0, column=0, padx=5, pady=5)
+        self.name_entry = ctk.CTkEntry(entry_frame)
+        self.name_entry.grid(row=0, column=1, padx=5, pady=5)
+
+        ctk.CTkLabel(entry_frame, text="ID:", width=80).grid(row=1, column=0, padx=5, pady=5)
+        self.visitor_id_entry = ctk.CTkEntry(entry_frame)
+        self.visitor_id_entry.grid(row=1, column=1, padx=5, pady=5)
+
+        ctk.CTkButton(parent, text="Выбрать изображение", command=self.select_image).pack(pady=5)
+        ctk.CTkButton(parent, text="Добавить Отпечаток", command=self.add_fingerprint_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Получить Посетителей", command=self.get_visitors_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Получить Посещения", command=self.get_visits_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Удалить Старые Посещения", command=self.delete_old_visits_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Экспортировать в Excel", command=self.export_visits_to_excel_test).pack(pady=5)
+
+    def create_qa_tab(self, parent):
+        ctk.CTkLabel(parent, text="Управление QA", font=("Arial", 18)).pack(pady=10)
+
+        entry_frame = ctk.CTkFrame(parent)
+        entry_frame.pack(pady=10, fill="x")
+
+        ctk.CTkLabel(entry_frame, text="ID QA пары:", width=80).grid(row=0, column=0, padx=5, pady=5)
+        self.qa_id_entry = ctk.CTkEntry(entry_frame)
+        self.qa_id_entry.grid(row=0, column=1, padx=5, pady=5)
+
+        ctk.CTkLabel(entry_frame, text="Вопрос:", width=80).grid(row=1, column=0, padx=5, pady=5)
+        self.question_entry = ctk.CTkEntry(entry_frame)
+        self.question_entry.grid(row=1, column=1, padx=5, pady=5)
+
+        ctk.CTkLabel(entry_frame, text="Ответ:", width=80).grid(row=2, column=0, padx=5, pady=5)
+        self.answer_entry = ctk.CTkEntry(entry_frame)
+        self.answer_entry.grid(row=2, column=1, padx=5, pady=5)
+
+        ctk.CTkButton(parent, text="Создать QA пару", command=self.create_qa_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Получить Все QA пары", command=self.get_all_qa_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Получить QA пару", command=self.get_qa_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Обновить QA пару", command=self.update_qa_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Удалить QA пару", command=self.delete_qa_test).pack(pady=5)
+
     def create_widgets(self):
         header_frame = ctk.CTkFrame(self)
         header_frame.pack(fill="x", pady=10)
@@ -27,16 +72,21 @@ class APITestApp(ctk.CTk):
         header_label = ctk.CTkLabel(header_frame, text="API Тестовое Приложение", font=("Arial", 24))
         header_label.pack()
 
-        main_frame = ctk.CTkFrame(self)
-        main_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        # Создание TabView для разделения функционала
+        tab_view = ctk.CTkTabview(self, width=900, height=700)
+        tab_view.pack(fill="both", expand=True, padx=10, pady=10)
 
-        control_frame = ctk.CTkFrame(main_frame, width=250)
-        control_frame.pack(side="left", fill="y", padx=(0, 10))
+        # Вкладка для управления посетителями
+        visitors_tab = tab_view.add("Посетители")
+        self.create_visitors_tab(visitors_tab)
 
-        self.display_frame = ctk.CTkFrame(main_frame)
-        self.display_frame.pack(side="left", fill="both", expand=True)
+        # Вкладка для управления QA
+        qa_tab = tab_view.add("Вопросы и Ответы")
+        self.create_qa_tab(qa_tab)
 
-        self.create_controls(control_frame)
+        # Общая область вывода
+        self.display_frame = ctk.CTkScrollableFrame(self, width=900, height=200)
+        self.display_frame.pack(fill="x", expand=True, padx=10, pady=10)
 
     def create_controls(self, parent):
         # Поля ввода для участников
@@ -58,6 +108,9 @@ class APITestApp(ctk.CTk):
         ctk.CTkButton(parent, text="Приветствие по Лицу", command=self.face_recognition_greeting_test).pack(pady=5)
         ctk.CTkButton(parent, text="Получить Посетителей", command=self.get_visitors_test).pack(pady=5)
         ctk.CTkButton(parent, text="Получить Посещения", command=self.get_visits_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Удалить Старые Посещения", command=self.delete_old_visits_test).pack(pady=5)
+        ctk.CTkButton(parent, text="Экспортировать Посещения в Excel", command=self.export_visits_to_excel_test).pack(
+            pady=5)
 
         # Разделение для QA
         tkinter.ttk.Separator(parent).pack(fill="x", pady=10)
@@ -104,10 +157,10 @@ class APITestApp(ctk.CTk):
         img_label.pack(pady=10)
 
     def display_text(self, text):
-        text_widget = ctk.CTkTextbox(self.display_frame, width=600, height=400)
+        text_widget = ctk.CTkTextbox(self.display_frame, wrap="word")
         text_widget.insert("0.0", text)
         text_widget.configure(state="disabled")
-        text_widget.pack(pady=10)
+        text_widget.pack(padx=10, pady=10, fill="both", expand=True)
 
     # Методы для CRUD операций с участниками (посетителями)
     def get_visitors_test(self):
@@ -124,6 +177,77 @@ class APITestApp(ctk.CTk):
                 visitors = response.json().get("visitors", [])
                 for visitor in visitors:
                     result_text += f"ID: {visitor['id']}, Имя: {visitor['name']}\n"
+            except requests.exceptions.JSONDecodeError:
+                result_text += "Ответ сервера не является JSON."
+            self.display_text(result_text)
+        except Exception as e:
+            self.display_text(f"Ошибка при подключении к серверу: {e}")
+
+    def delete_old_visits_test(self):
+        """Тестирование удаления старых посещений."""
+        self.clear_display()
+        self.display_text("Запрос на удаление старых посещений")
+
+        url = f'{BASE_URL}/api/delete_old_visits'
+
+        try:
+            response = requests.delete(url)
+            result_text = f"Статус код: {response.status_code}\n\n"
+            try:
+                response_data = response.json()
+                result_text += f"Ответ: {response_data}"
+            except requests.exceptions.JSONDecodeError:
+                result_text += "Ответ сервера не является JSON."
+            self.display_text(result_text)
+        except Exception as e:
+            self.display_text(f"Ошибка при подключении к серверу: {e}")
+
+    def handle_api_response(self, response):
+        """Обработка ответов API."""
+        result_text = f"Статус код: {response.status_code}\n\n"
+        try:
+            response_data = response.json()
+            result_text += f"Ответ: {response_data}"
+        except requests.exceptions.JSONDecodeError:
+            result_text += "Ответ сервера не является JSON."
+        self.display_text(result_text)
+
+    def export_visits_to_excel_test(self):
+        """Тестирование экспорта посещений через API."""
+
+        url = f'{BASE_URL}/api/export_visits_to_excel'
+
+        try:
+            response = requests.get(url, stream=True)
+            if response.status_code == 200:
+                filepath = filedialog.asksaveasfilename(
+                    defaultextension=".xlsx",
+                    filetypes=[("Excel файлы", "*.xlsx")],
+                    title="Сохранить как"
+                )
+                if filepath:
+                    with open(filepath, "wb") as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                    self.display_text(f"Файл сохранен: {filepath}")
+            else:
+                self.handle_api_response(response)
+        except Exception as e:
+            self.display_text(f"Ошибка при подключении к серверу: {e}")
+
+    def export_visits_to_excel_test(self):
+        """Тестирование экспорта посещений в Excel."""
+        self.clear_display()
+        self.display_text("Запрос на экспорт посещений в Excel")
+
+        url = f'{BASE_URL}/api/export_visits_to_excel'
+
+        try:
+            response = requests.get(url)
+            result_text = f"Статус код: {response.status_code}\n\n"
+            try:
+                response_data = response.json()
+                result_text += f"Ответ: {response_data}"
             except requests.exceptions.JSONDecodeError:
                 result_text += "Ответ сервера не является JSON."
             self.display_text(result_text)
