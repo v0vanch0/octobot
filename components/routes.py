@@ -1,4 +1,5 @@
 # routes.py
+import string
 from datetime import datetime, timedelta
 import json
 import os
@@ -19,6 +20,10 @@ logging.basicConfig(level=logging.INFO)
 
 # Инициализация TTS модели
 tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda()
+
+
+def clean_text(text):
+    return text.translate(str.maketrans('', '', string.punctuation)).lower()
 
 
 # Функция для удаления старых посещений
@@ -61,7 +66,7 @@ def export_visits_to_excel():
 
 def register_routes(app):
     """Функция для регистрации маршрутов приложения Flask."""
-
+    mutex = False
     # Предварительная генерация аудио для "не знаю ответа"
     text = "Пока что я не знаю ответа на этот вопрос"
     aud_file = "dont_know.mp3"  # Имя файла без пути
@@ -110,86 +115,88 @@ def register_routes(app):
     def add_fingerprint():
         """Добавление нового участника с изображением лица и персональным приветствием."""
         try:
-            # Получение изображения лица из запроса
-            image_file = request.files.get('image')
-            name = request.form.get('name')
-            personal_greeting = request.form.get('personal_greeting')  # Получение приветствия, если предоставлено
+            if mutex:
+                # Получение изображения лица из запроса
+                image_file = request.files.get('image')
+                name = request.form.get('name')
+                personal_greeting = request.form.get('personal_greeting')  # Получение приветствия, если предоставлено
 
-            if not name or not image_file:
-                return jsonify({"error": "Name and image are required."}), 400
+                if not name or not image_file:
+                    return jsonify({"error": "Name and image are required."}), 400
 
-            # Чтение изображения с использованием OpenCV
-            image_bytes = image_file.read()
-            npimg = np.frombuffer(image_bytes, np.uint8)
-            image_np = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+                # Чтение изображения с использованием OpenCV
+                image_bytes = image_file.read()
+                npimg = np.frombuffer(image_bytes, np.uint8)
+                image_np = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
-            if image_np is None:
-                return jsonify({"error": "Invalid image."}), 400
+                if image_np is None:
+                    return jsonify({"error": "Invalid image."}), 400
 
-            # Извлечение цифрового отпечатка лица
-            faces = face_detector(image_np)
+                # Извлечение цифрового отпечатка лица
+                faces = face_detector(image_np)
 
-            if len(faces) == 0:
-                return jsonify({"message": "No face detected in the image."}), 404
+                if len(faces) == 0:
+                    return jsonify({"message": "No face detected in the image."}), 404
 
-            shape = shape_predictor(image_np, faces[0])
-            face_embedding = np.array(face_rec_model.compute_face_descriptor(image_np, shape))
+                shape = shape_predictor(image_np, faces[0])
+                face_embedding = np.array(face_rec_model.compute_face_descriptor(image_np, shape))
 
-            # Преобразуем массив в бинарные данные для хранения
-            fingerprint_bytes = face_embedding.tobytes()
+                # Преобразуем массив в бинарные данные для хранения
+                fingerprint_bytes = face_embedding.tobytes()
 
-            conn = get_db_connection()
-            cursor = conn.cursor()
+                conn = get_db_connection()
+                cursor = conn.cursor()
 
-            # Проверяем, существует ли участник с таким же отпечатком
-            cursor.execute('SELECT * FROM participants')
-            participants = cursor.fetchall()
+                # Проверяем, существует ли участник с таким же отпечатком
+                cursor.execute('SELECT * FROM participants')
+                participants = cursor.fetchall()
 
-            for participant in participants:
-                stored_fingerprint = participant['face_embedding']
-                stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
-                distance = np.linalg.norm(stored_fingerprint - face_embedding)
-                if distance < 0.6:  # Задаем порог для сравнения
-                    conn.close()
-                    return jsonify({"message": f"Participant {participant['name']} already exists."}), 409
+                for participant in participants:
+                    stored_fingerprint = participant['face_embedding']
+                    stored_fingerprint = np.frombuffer(stored_fingerprint, dtype=np.float64)
+                    distance = np.linalg.norm(stored_fingerprint - face_embedding)
+                    if distance < 0.4:  # Задаем порог для сравнения
+                        conn.close()
+                        return jsonify({"message": f"Participant {participant['name']} already exists."}), 409
 
-            # Генерация персонального приветствия с использованием TTS
-            greeting_text = f"Здравствуйте, {name}!"
-            greeting_file = f"{name}_greeting.mp3"  # Имя файла без пути
-            tts.tts_to_file(text=greeting_text,
-                            speaker_wav="./audio/files/example_04_real.wav",
-                            language="ru",
-                            file_path=os.path.join("./audio/files", greeting_file),
-                            speed=1.15)
+                # Генерация персонального приветствия с использованием TTS
+                greeting_text = f"Здравствуйте, {name}!"
+                greeting_file = f"{name}_greeting.mp3"  # Имя файла без пути
+                tts.tts_to_file(text=greeting_text,
+                                speaker_wav="./audio/files/example_04_real.wav",
+                                language="ru",
+                                file_path=os.path.join("./audio/files", greeting_file),
+                                speed=1.15)
 
-            # Добавляем персональное приветствие в JSON
-            audio_data_file = "audio/audio_data.json"
-            if os.path.exists(audio_data_file):
-                with open(audio_data_file, 'r', encoding='utf-8') as file:
-                    audio_data = json.load(file)
+                # Добавляем персональное приветствие в JSON
+                audio_data_file = "audio/audio_data.json"
+                if os.path.exists(audio_data_file):
+                    with open(audio_data_file, 'r', encoding='utf-8') as file:
+                        audio_data = json.load(file)
+                else:
+                    audio_data = {}
+
+                if personal_greeting:
+                    # Сохраняем путь к персональному приветствию как имя файла
+                    audio_data[personal_greeting] = greeting_file
+                else:
+                    # Сохраняем стандартное приветствие
+                    audio_data[f"Приветствие для {name}"] = greeting_file
+
+                with open(audio_data_file, 'w', encoding='utf-8') as file:
+                    # Перезаписываем JSON файл
+                    json.dump(audio_data, file, ensure_ascii=False, indent=4)
+
+                # Добавляем нового участника в базу данных
+                cursor.execute('INSERT INTO participants (name, face_embedding) VALUES (?, ?)',
+                               (name, fingerprint_bytes))
+                conn.commit()
+                qa_id = cursor.lastrowid
+                conn.close()
+
+                return jsonify({"message": f"Participant {name} added successfully."}), 201
             else:
-                audio_data = {}
-
-            if personal_greeting:
-                # Сохраняем путь к персональному приветствию как имя файла
-                audio_data[personal_greeting] = greeting_file
-            else:
-                # Сохраняем стандартное приветствие
-                audio_data[f"Приветствие для {name}"] = greeting_file
-
-            with open(audio_data_file, 'w', encoding='utf-8') as file:
-                # Перезаписываем JSON файл
-                json.dump(audio_data, file, ensure_ascii=False, indent=4)
-
-            # Добавляем нового участника в базу данных
-            cursor.execute('INSERT INTO participants (name, face_embedding) VALUES (?, ?)',
-                           (name, fingerprint_bytes))
-            conn.commit()
-            qa_id = cursor.lastrowid
-            conn.close()
-
-            return jsonify({"message": f"Participant {name} added successfully."}), 201
-
+                return jsonify({"error": "Слишком много вызовов"}), 400
         except Exception as e:
             logging.error(f"Ошибка при добавлении отпечатка: {e}")
             return jsonify({"error": str(e)}), 500
@@ -285,7 +292,7 @@ def register_routes(app):
         if visit_today:
             conn.close()
             logging.info("Visitor has already visited today.")
-            return jsonify({"message": "Visitor has already visited today."}), 200
+            return jsonify({"message": "Visitor has already visited today."}), 400
 
         # Приветствие участника с использованием персонального приветствия
         participant_name = recognized_participant['name']
@@ -563,10 +570,14 @@ def register_routes(app):
 
             # Обновляем вопрос и/или ответ
             if question and answer:
+                question = clean_text(question)
+                answer = clean_text(answer)
                 cursor.execute('UPDATE qa SET question = ?, answer = ? WHERE id = ?', (question, answer, qa_id))
             elif question:
+                question = clean_text(question)
                 cursor.execute('UPDATE qa SET question = ? WHERE id = ?', (question, qa_id))
             elif answer:
+                answer = clean_text(answer)
                 cursor.execute('UPDATE qa SET answer = ? WHERE id = ?', (answer, qa_id))
 
             # Если ответ был изменён, обновляем аудио файл

@@ -1,11 +1,16 @@
+import os
 import customtkinter as ctk
 import pandas as pd
 import json
 from tkinter import messagebox, filedialog
 
-# Путь к JSON файлу
+# Путь к JSON файлу и папке с аудиофайлами
 json_file_path = "audio_data.json"
+audio_folder_path = "files"
+
 ctk.set_default_color_theme("green")
+
+
 # Функция для загрузки JSON файла и преобразования в DataFrame (таблицу)
 def load_json_to_dataframe(json_file):
     try:
@@ -29,6 +34,27 @@ def save_dataframe_to_json(df, json_file):
         messagebox.showinfo("Успех", f"Данные успешно сохранены в {json_file}")
     except Exception as e:
         messagebox.showerror("Ошибка", f"Ошибка сохранения JSON: {e}")
+
+
+# Функция для удаления лишних файлов
+def delete_extra_audio_files(folder, valid_files):
+    try:
+        if not os.path.exists(folder):
+            messagebox.showerror("Ошибка", f"Папка {folder} не существует.")
+            return
+
+        files_in_folder = os.listdir(folder)
+        valid_filenames = [os.path.basename(file_path) for file_path in valid_files]
+
+        for file_name in files_in_folder:
+            file_path = os.path.join(folder, file_name)
+            # Удаляем файл, если его нет в списке валидных
+            if file_name not in valid_filenames and os.path.isfile(file_path):
+                os.remove(file_path)
+
+        messagebox.showinfo("Успех", "Лишние файлы успешно удалены.")
+    except Exception as e:
+        messagebox.showerror("Ошибка", f"Ошибка при удалении лишних файлов: {e}")
 
 
 # Основное приложение
@@ -96,6 +122,10 @@ class JSONEditorApp(ctk.CTk):
         # Кнопка для сохранения изменений
         save_button = ctk.CTkButton(self, text="Сохранить изменения", command=self.save_changes)
         save_button.grid(row=2, column=0, pady=5)
+
+        # Кнопка для удаления лишних файлов
+        clean_button = ctk.CTkButton(self, text="Удалить лишние файлы", command=self.clean_files)
+        clean_button.grid(row=3, column=0, pady=5)
 
     def select_file(self, entry):
         # Открытие диалогового окна для выбора файла
@@ -165,6 +195,11 @@ class JSONEditorApp(ctk.CTk):
 
         # Сохраняем в JSON
         save_dataframe_to_json(self.df, json_file_path)
+
+    def clean_files(self):
+        # Удаляем лишние файлы в папке
+        valid_files = self.df["Путь к аудиофайлу"].tolist()
+        delete_extra_audio_files(audio_folder_path, valid_files)
 
 
 if __name__ == "__main__":
