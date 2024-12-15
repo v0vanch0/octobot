@@ -1,4 +1,5 @@
 # routes.py
+import hashlib
 import string
 from datetime import datetime, timedelta
 import json
@@ -7,7 +8,8 @@ import os
 import numpy as np
 from flask import request, jsonify, send_file
 import cv2  # Для обработки изображений
-from audio.audio_data import audiod
+from audio.audio_data import load_audio_data
+audiod = load_audio_data()
 from components.face_rec import shape_predictor, face_rec_model, face_detector
 from components.utils import get_db_connection
 from components.voice_recognition import find_best_matching_question
@@ -15,11 +17,17 @@ from TTS.api import TTS
 import pandas as pd
 import logging
 
+mutex = False
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
 # Инициализация TTS модели
 tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2").cuda()
+
+
+def generate_unique_filename(answer, length=8):
+    answer_hash = hashlib.md5(answer.encode('utf-8')).hexdigest()[:length]
+    return f"audio_{answer_hash}.mp3"
 
 
 def clean_text(text):
@@ -66,7 +74,7 @@ def export_visits_to_excel():
 
 def register_routes(app):
     """Функция для регистрации маршрутов приложения Flask."""
-    mutex = False
+
     # Предварительная генерация аудио для "не знаю ответа"
     text = "Пока что я не знаю ответа на этот вопрос"
     aud_file = "dont_know.mp3"  # Имя файла без пути
@@ -115,7 +123,9 @@ def register_routes(app):
     def add_fingerprint():
         """Добавление нового участника с изображением лица и персональным приветствием."""
         try:
-            if mutex:
+            global mutex
+            if not mutex:
+                mutex = True
                 # Получение изображения лица из запроса
                 image_file = request.files.get('image')
                 name = request.form.get('name')
@@ -193,7 +203,7 @@ def register_routes(app):
                 conn.commit()
                 qa_id = cursor.lastrowid
                 conn.close()
-
+                mutex = True
                 return jsonify({"message": f"Participant {name} added successfully."}), 201
             else:
                 return jsonify({"error": "Слишком много вызовов"}), 400
@@ -431,6 +441,7 @@ def register_routes(app):
     @app.route('/api/qa', methods=['POST'])
     def create_qa():
         """Создание новой пары вопрос-ответ."""
+        global audiod
         try:
             data = request.get_json()
             question = data.get('question')
@@ -441,7 +452,8 @@ def register_routes(app):
 
             conn = get_db_connection()
             cursor = conn.cursor()
-            filename = f"{answer}.mp3"  # Имя файла без пути
+            fn = generate_unique_filename(answer)
+            filename = f"{fn}.mp3"  # Имя файла без пути
             path = os.path.join("./audio/files", filename)
 
             # Добавление озвучки ответа
@@ -464,7 +476,7 @@ def register_routes(app):
             with open(audio_data_file, 'w', encoding='utf-8') as file:
                 # Перезаписываем JSON файл
                 json.dump(audio_data, file, ensure_ascii=False, indent=4)
-
+            audiod = load_audio_data()
             # Добавляем новую QA пару в базу данных
             cursor.execute('INSERT INTO qa (question, answer) VALUES (?, ?)', (question, answer))
             conn.commit()

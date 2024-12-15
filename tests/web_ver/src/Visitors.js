@@ -12,6 +12,10 @@ function Visitors() {
   const [image, setImage] = useState(null);
   const [transcript, setTranscript] = useState('');
 
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [autoUploadStatus, setAutoUploadStatus] = useState('');
+
+
   // Состояния для управления сообщениями и отображением
   const [errorMessage, setErrorMessage] = useState('');
   const [apiResponses, setApiResponses] = useState([]);
@@ -35,6 +39,45 @@ function Visitors() {
       setImagePreview(null);
     }
   };
+
+  const handleFolderChange = async (e) => {
+    const folder = e.target.files;
+    if (folder) {
+        setSelectedFolder(folder);
+        uploadImagesFromFolder(folder);
+    }
+  };
+
+  const uploadImagesFromFolder = async (folder) => {
+    setAutoUploadStatus('Загрузка началась...');
+    const filesArray = Array.from(folder);
+
+    for (const file of filesArray) {
+        if (!file.name.match(/\.(jpg|jpeg|png|webp|heic|bmp)$/)) {
+            continue;
+        }
+
+        const fileNameWithoutExtension = file.name.substring(0, file.name.lastIndexOf('.'));
+        const nameParts = fileNameWithoutExtension.split('_');
+        if (nameParts.length < 2) {
+            continue;
+        }
+
+        const name = `${nameParts[1]} ${nameParts[0]}`;
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('image', file);
+
+        try {
+            await axios.post(`${BASE_URL}/api/add_fingerprint`, formData);
+        } catch (error) {
+            setAutoUploadStatus(`Ошибка при загрузке файла ${file.name}: ${error.message}`);
+        }
+    }
+    setAutoUploadStatus('Загрузка завершена.');
+};
+
+
 
   // Функция для добавления отпечатка
   const addFingerprint = async () => {
@@ -208,6 +251,7 @@ function Visitors() {
     }
   };
 
+  .
   // Функция для очистки таблицы ответов
   const clearApiResponses = () => {
     setApiResponses([]);
@@ -275,7 +319,20 @@ function Visitors() {
         
         
         {/* Форма для взаимодействия с посетителями */}
+        {autoUploadStatus && <Alert variant="info">{autoUploadStatus}</Alert>}
         <Form className="mt-4">
+        <Form.Group controlId="formFolder" className="mb-3">
+          <Form.Label>Добавить папку участников с изображениями</Form.Label>
+          <Form.Control
+              type="file"
+              webkitdirectory="true"
+              directory=""
+              multiple
+              onChange={handleFolderChange}
+          />
+        </Form.Group>
+        
+
           <Form.Group as={Row} className="mb-3" controlId="formName">
             <Form.Label column sm="2">Имя:</Form.Label>
             <Col sm="10">
