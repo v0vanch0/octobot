@@ -1,5 +1,5 @@
 Скриншот помощника:
-#![photo_5294024320693169242_w](https://github.com/user-attachments/assets/79cc1322-01b6-4157-a29a-f82a611fe020)
+![photo_5294024320693169242_w](https://github.com/user-attachments/assets/79cc1322-01b6-4157-a29a-f82a611fe020)
 Панель для работы с базой:
 ![image](https://github.com/user-attachments/assets/9f3ff3fa-986f-4f83-bd56-49d09a1515b9)
 ## Структура проекта
